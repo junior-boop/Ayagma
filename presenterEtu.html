@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 350px;
+            margin-top: 26px;
+        }
+
+        th,
+        tr,
+        td {
+            border: 1px solid silver;
+            padding: 7px 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bloc_page">
+        <h1>Etudiant</h1>
+        <div id="block">
+        </div>
+
+        <hr width="70%" style=" margin: 36px 0;">
+
+        <div class="notes">
+            <div class="champ">
+                <label for="matiere"> Matière</label>
+                <input type="text" id="matiere">
+            </div>
+            <div class="champ">
+                <label for="note"> Notes</label>
+                <input type="number" id="note">
+            </div>
+            <button id="btn">Enregistrer</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th width='150px'>Matières</th>
+                    <th width='70px'>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="liste_note">
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const block = document.getElementById('block')
+            const params = window.location.search.split('=')
+            const matiere = document.getElementById('matiere')
+            const note = document.getElementById('note')
+            const btn = document.getElementById("btn")
+            let id = params[1]
+            let l = localStorage
+            let liste_table = document.getElementById('liste_note')
+
+            let data = JSON.parse(l.getItem('Etudiant'))
+
+            if (l.getItem('Notes') !== null) {
+                const note = JSON.parse(l.getItem('Notes'))
+                for (let el of note) {
+                    if (id == el.id) {
+                        ligne(el)
+                    }
+                }
+            }
+
+            const Age = (d) => {
+                let actu = new Date()
+                let date = new Date(d)
+
+                let age = actu.getFullYear() - date.getFullYear()
+                return age
+            }
+
+            const Parcours = (x) => {
+                switch (x) {
+                    case 'dw':
+                        return 'DEVELOPPEMENT WEB';
+                        break;
+                    case 'ds':
+                        return 'DATA SCIENCE';
+                        break;
+                    case 'an':
+                        return 'ART NUMERIQUE';
+                        break;
+                }
+            }
+            console.log(id)
+            for (let el of data) {
+                if (id === el.id) {
+                    const HTML = `
+                    <div>
+                        <div class="key">Nom</div>
+                        <div class="value">${el.nom}</div>
+                    </div>
+                    <div>
+                        <div class="key"> Prénom</div>
+                        <div class="value">${el.prenom}</div>
+                    </div>
+                    <div>
+                        <div class="key">Lieu de naissance</div>
+                        <div class="value">${el.LDN}</div>
+                    </div>
+                    <div>
+                        <div class="key">Date de naissance</div>
+                        <div class="value">${el.DDN}</div>
+                    </div>
+                    <div>
+                        <div class="key">Taille</div>
+                        <div class="value">${el.taille} cm</div>
+                    </div>
+                    <div>
+                        <div class="key">Poids</div>
+                        <div class="value">${el.poids} KG</div>
+                    </div>
+                    <div>
+                        <div class="key">Sexe</div>
+                        <div class="value">${el.sexe}</div>
+                    </div>
+                    <div>
+                        <div class="key">Parcours</div>
+                        <div class="value">${Parcours(el.parcours)}</div>
+                    </div>
+                    <div>
+                        <div class="key">Matricule</div>
+                        <div class="value">${el.matricule}</div>
+                    </div>
+                   
+
+                
+                `
+                    block.innerHTML = HTML
+                }
+            }
+
+
+
+            btn.onclick = function () {
+                const object = {
+                    id: id,
+                    matiere: matiere.value,
+                    note: note.value
+                }
+
+                const Notes = l.getItem('Notes')
+
+                if (Notes === null) {
+                    let data = []
+                    data.push(object)
+                    l.setItem('Notes', JSON.stringify(data))
+                    ligne(object)
+                    matiere.value = ''
+                    note.value = ''
+                } else {
+                    let data = JSON.parse(Notes)
+                    data.push(object)
+                    l.setItem('Notes', JSON.stringify(data))
+                    ligne(object)
+                    matiere.value = ''
+                    note.value = ''
+                }
+            }
+
+            function ligne(object) {
+
+
+                const HTML = `
+                    <tr>
+                        <td>${object.matiere}</td>
+                        <td>${object.note}</td>
+                        <td></td>
+                    </tr>
+                `
+                console.log(object)
+                liste_table.innerHTML += HTML
+            }
+
+        }
+    </script>
+</body>
+
+</html>

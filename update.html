@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+
+    <script src="./prototype.js"></script>
+</head>
+
+<body>
+    <div class="bloc_page">
+        <h1>Enregistrement</h1>
+        <form id="form">
+            <div>
+                <div class="left">
+                    <div class="champ">
+                        <label>NOM</label>
+                        <input type="text" name="nom" id="nom">
+                    </div>
+                    <div class="champ">
+                        <label>PRENOM</label>
+                        <input type="text" name="prenom" id="prenom">
+                    </div>
+                    <div class="champ">
+                        <label>Lieu de naissance</label>
+                        <input type="text" name="ldn" id="ldn">
+                    </div>
+                    <div class="champ">
+                        <label>Date de naissance</label>
+                        <input type="date" name="ddn" id="ddn">
+                    </div>
+
+                </div>
+
+                <div class="right">
+                    <div class="champ">
+                        <div class="petitChamp">
+                            <label>Taille</label>
+                            <input type="number" name="taille" id="taille">
+                        </div>
+                        <div class="petitChamp">
+                            <label>Poids</label>
+                            <input type="number" name="poids" id="poids">
+                        </div>
+                    </div>
+                    <div class="champ">
+                        <label>sexe</label>
+                        <div class="petitChamp radio">
+                            <input type="radio" name="choix" id="choix1" value="homme">homme
+                        </div>
+                        <div class="petitChamp radio">
+                            <input type="radio" name="choix" id="choix2" value="femme">femme
+                        </div>
+                    </div>
+                    <div class="champ">
+                        <label>Parcours</label>
+                        <select name="parcours" id="parcours">
+                            <option value="dw">Developpement Web</option>
+                            <option value="ds">Data Science</option>
+                            <option value="an">Art Numerique</option>
+                        </select>
+                    </div>
+                    <div class="champ">
+                        <label>Matricule</label>
+                        <input type="text" name="matricule" id="matricule">
+                    </div>
+
+                </div>
+            </div>
+            <div class="button">
+                <button id="save">Enregistrer</button>
+                <a class="annuler" href="/index.html">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        window.onload = function () {
+            let l = localStorage
+            let data = JSON.parse(l.getItem('Etudiant'))
+            const form = document.getElementById('form')
+            const save = document.getElementById('save')
+            const search = location.search.split('=')
+            const id = search[1]
+
+            for (let el of data) {
+                if (id === el.id) {
+
+                    form[0].value = el.nom
+                    form[1].value = el.prenom
+                    form[2].value = el.LDN
+                    form[3].value = el.DDN
+                    form[4].value = el.taille
+                    form[5].value = el.poids
+                    form[8].value = el.parcours
+                    form[9].value = el.matricule
+
+                    if (el.sexe === 'HOMME') form[6].checked
+                    else form[7].checked
+
+                }
+            }
+
+            save.addEventListener('click', e => {
+                e.preventDefault();
+
+                const Sexe = () => {
+                    if (form[6].checked) {
+                        return "HOMME"
+                    } else {
+                        return "FEMME"
+                    }
+                }
+
+                const object = {
+                    nom: form[0].value,
+                    prenom: form[1].value,
+                    LDN: form[2].value,
+                    DDN: form[3].value,
+                    taille: form[4].value,
+                    poids: form[5].value,
+                    sexe: Sexe(),
+                    parcours: form[8].value,
+                    matricule: form[9].value
+                }
+
+                let etudiant = new Etudiant(object)
+                etudiant.update(id, object)
+
+                location.pathname = '/index.html'
+            }, false)
+
+            const Age = (d) => {
+                let actu = new Date()
+                let date = new Date(d)
+
+                let age = actu.getFullYear() - date.getFullYear()
+                return age
+            }
+
+            const Parcours = (x) => {
+                switch (x) {
+                    case 'dw':
+                        return 'DEVELOPPEMENT WEB';
+                        break;
+                    case 'ds':
+                        return 'DATA SCIENCE';
+                        break;
+                    case 'an':
+                        return 'ART NUMERIQUE';
+                        break;
+                }
+            }
+
+
+            let etudiant;
+            const items = document.getElementsByClassName('items')
+            for (let el of items) {
+                el.addEventListener('click', e => {
+                    location.href = '/presenterEtu.html?id=' + el.dataset.id
+                })
+            }
+
+            // update.addEventListener('click', e => {
+            //     e.preventDefault();
+
+            //     etudiant = JSON.parse(localStorage.getItem("etudiant"))
+            //     console.log(etudiant)
+            //     location.pathname = '/index.html'
+            // }, false)
+
+
+
+        }
+    </script>
+</body>
+
+</html>
